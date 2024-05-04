@@ -2,6 +2,7 @@ package main
 
 import (
 	app "github.com/mnm458/zeke-kafka-consumer/pkg/server"
+	invoice "github.com/mnm458/zeke-kafka-consumer/pkg/invoice"
 
 	"encoding/binary"
 	"log"
@@ -12,9 +13,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	invoice "github.com/mnm458/zeke-kafka-consumer/pkg/invoice"
-	// app "github.com/mnm458/zeke-kafka-consumer/pkg/server"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ethereum/go-ethereum/common"
@@ -76,8 +74,6 @@ const myABIJSON = `[
         "type": "function"
     }
 ]`
-
-
 
 
 func ReadConfig() kafka.ConfigMap {
@@ -171,7 +167,7 @@ func main() {
 
 			int64Val := param3.Int64()
 			intVal := int(int64Val)
-			invoice.CreatePayPalInvoice(intVal)//send the txAmount to create PayPal invoice
+			invoice_id, _ := invoice.CreatePayPalInvoice(intVal)//send the txAmount to create PayPal invoice
 		} else {
 			fmt.Println("No logs found in the transaction receipt")
 		}
