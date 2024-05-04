@@ -53,7 +53,7 @@ func main() {
 	consumer.SubscribeTopics([]string{topic}, nil)
 
 	// Rest APi for webhook endpoint
-	app.Run()
+	go app.Run()
 
 	processMessages(consumer, rpcClient)
 
