@@ -1,6 +1,8 @@
 package main
 
 import (
+	app "github.com/mnm458/zeke-kafka-consumer/pkg/server"
+
 	"encoding/binary"
 	"log"
 	"math/big"
@@ -189,8 +191,9 @@ func main() {
 		case *kafka.Message:
 			// application-specific processing
 			// TODO: use go fiber client to make invoice requests
+			// TODO: persist key pair - invoice_id, order_id
 			fmt.Printf("Consumed event from topic %s: key = %-10s value = %s\n",
-				*ev.TopicPartition.Topic, string(ev.Key), string(ev.Value))
+					*ev.TopicPartition.Topic, string(ev.Key), string(ev.Value))
 		case kafka.Error:
 			fmt.Fprintf(os.Stderr, "%% Error: %v\n", ev)
 			run = false
