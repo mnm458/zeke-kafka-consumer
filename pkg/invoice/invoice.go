@@ -2,27 +2,26 @@ package invoice
 
 import (
 	"bytes"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 	"encoding/base64"
-	"strings"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
-	"github.com/gofiber/fiber/v3"
 	"math/rand"
-	"time"
+	"net/http"
 	"os"
+	"strings"
+	"time"
+
+	"github.com/gofiber/fiber/v3"
 	"github.com/joho/godotenv"
 )
-
 
 type Body struct {
 	Rel    string `json:"rel"`
 	Href   string `json:"href"`
 	Method string `json:"method"`
 }
-
 
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
@@ -43,7 +42,7 @@ func CreatePayPalInvoice(txAmount int) error {
 	// PayPal Access Token (Replace with your actual access token)
 	clientID := os.Getenv("CLIENT_ID")
 	clientSecret := os.Getenv("CLIENT_SECRET")
-	
+
 	accessToken, err := generateAccessToken(clientID, clientSecret)
 	if err != nil {
 		fmt.Println("Error generating access token:", err)
@@ -59,7 +58,7 @@ func CreatePayPalInvoice(txAmount int) error {
 	// JSON payload for the invoice
 	payload := []byte(fmt.Sprintf(`{
 		"detail": {
-			"invoice_number": "INV-%s",
+			"invoice_number": "INV-%v",
 			"reference": "Reference-123",
 			"merchant_info": {
 				"email": "merchant@example.com"
@@ -82,7 +81,7 @@ func CreatePayPalInvoice(txAmount int) error {
 				}
 			}
 		]
-	}`, invoiceNumber, txAmount ))
+	}`, invoiceNumber, txAmount))
 
 	// Create HTTP request
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
@@ -103,7 +102,7 @@ func CreatePayPalInvoice(txAmount int) error {
 	defer resp.Body.Close()
 
 	// Read response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -149,7 +148,7 @@ func generateAccessToken(clientID, clientSecret string) (string, error) {
 	defer resp.Body.Close()
 
 	// Read response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -170,13 +169,13 @@ func generateAccessToken(clientID, clientSecret string) (string, error) {
 
 func main() {
 	app := fiber.New()
-	
+
 	// Create PayPal invoice when the server starts
 	// if err := createPayPalInvoice(); err != nil {
 	// 	fmt.Println("Error creating PayPal invoice:", err)
 	// 	return
 	// }
-	
+
 	// Fiber server starts without any routes
 	app.Listen(":3000")
 }
