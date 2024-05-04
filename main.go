@@ -64,9 +64,10 @@ func ReadConfig() kafka.ConfigMap {
 }
 
 /*
-GethParseTx()
-Reads the client configuration from client.properties
-Returns it as a key-value map
+GethParseTx(*ethclient.Client, string) ParsedTx
+Parses a transaction and extracts the onRamper address, amount, and intent ID.
+It takes an Ethereum client and a transaction hash as input.
+Returns a ParsedTx struct containing the extracted information.
 */
 func GethParseTx(client *ethclient.Client, txString string) ParsedTx {
 	txHash := common.HexToHash(txString)
@@ -92,6 +93,12 @@ func GethParseTx(client *ethclient.Client, txString string) ParsedTx {
 	return parsedTx
 }
 
+/*
+GethRetrieveLog(*ethclient.Client, common.Hash)string
+Retrieves the intent ID from the transaction receipt logs.
+It takes an Ethereum client and a transaction hash as input.
+Returns the intent ID as a string.
+*/
 func GethRetrieveLog(client *ethclient.Client, txHash common.Hash) string {
 	receipt, receiptErr := client.TransactionReceipt(context.Background(), txHash)
 	var intentID string
