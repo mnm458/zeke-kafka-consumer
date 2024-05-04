@@ -13,6 +13,9 @@ import (
 	"os"
 	"strings"
 
+	invoice "github.com/mnm458/zeke-kafka-consumer/pkg/invoice"
+	// app "github.com/mnm458/zeke-kafka-consumer/pkg/server"
+
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -74,6 +77,9 @@ const myABIJSON = `[
     }
 ]`
 
+
+
+
 func ReadConfig() kafka.ConfigMap {
 	// reads the client configuration from client.properties
 	// and returns it as a key-value map
@@ -84,6 +90,7 @@ func ReadConfig() kafka.ConfigMap {
 		os.Exit(1)
 	}
 	defer file.Close()
+
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -161,6 +168,10 @@ func main() {
 			returnValue := common.BytesToHash(log.Data)
 
 			fmt.Printf("Return Value: %s\n", string(returnValue.Hex()))
+
+			int64Val := param3.Int64()
+			intVal := int(int64Val)
+			invoice.CreatePayPalInvoice(intVal)//send the txAmount to create PayPal invoice
 		} else {
 			fmt.Println("No logs found in the transaction receipt")
 		}

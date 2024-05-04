@@ -94,6 +94,6 @@ func Run() {
 		return c.Send(c.Body())
 	})
 
-	// Start the server on port 3000
-	log.Fatal(app.Listen(":3000"))
+// Start the server on port 3000
+log.Fatal(app.Listen(":3000"))
 }
