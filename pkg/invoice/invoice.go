@@ -31,7 +31,7 @@ type TokenResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func CreatePayPalInvoice(txAmount int) error {
+func CreatePayPalInvoice(txAmount int) (string, error) {
 	// PayPal API endpoint for creating invoices
 	url := "https://api.sandbox.paypal.com/v2/invoicing/invoices"
 
@@ -122,10 +122,10 @@ func CreatePayPalInvoice(txAmount int) error {
 		log.Fatal("Error parsing JSON:", errbody)
 	}
 	fmt.Println("body json", bodyJson)
-	href := bodyJson.Href[len(bodyJson.Href)-24:]
+	invoice_id := bodyJson.Href[len(bodyJson.Href)-24:]
 	fmt.Println(href)
 
-	return nil
+	return invoice_id, nil
 }
 
 func generateAccessToken(clientID, clientSecret string) (string, error) {

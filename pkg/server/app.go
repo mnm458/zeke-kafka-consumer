@@ -49,11 +49,17 @@ type WebhookRequest struct {
 }
 
 func Run() {
-	// ctx := context.Background()
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+		log.Fatal("Error loading .env file", errEnv)
+	}
+
+	redisBaseUrl := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
 
 	// Initialise client to connect to db instance 1 for message broking
 	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: redisBaseUrl+":"+redisPort,
 		Password: "",
 		DB: 1,
 	})
@@ -91,7 +97,7 @@ func Run() {
     //     log.Fatal("Error reading from queue:", readErr)
     // }		
 
-		return c.Send(c.Body())
+		return c.SendString("Invoice_id: "+invoice_id+" added to queue ready to be processed.")
 	})
 
 // Start the server on port 3000
