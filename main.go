@@ -1,8 +1,8 @@
 package main
 
 import (
-	app "github.com/mnm458/zeke-kafka-consumer/pkg/server"
 	invoice "github.com/mnm458/zeke-kafka-consumer/pkg/invoice"
+	app "github.com/mnm458/zeke-kafka-consumer/pkg/server"
 
 	"encoding/binary"
 	"log"
@@ -75,7 +75,6 @@ const myABIJSON = `[
     }
 ]`
 
-
 func ReadConfig() kafka.ConfigMap {
 	// reads the client configuration from client.properties
 	// and returns it as a key-value map
@@ -86,7 +85,6 @@ func ReadConfig() kafka.ConfigMap {
 		os.Exit(1)
 	}
 	defer file.Close()
-
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -167,7 +165,8 @@ func main() {
 
 			int64Val := param3.Int64()
 			intVal := int(int64Val)
-			invoice_id, _ := invoice.CreatePayPalInvoice(intVal)//send the txAmount to create PayPal invoice
+			invoice_id, _ := invoice.CreatePayPalInvoice(intVal) //send the txAmount to create PayPal invoice
+			fmt.Println(invoice_id)
 		} else {
 			fmt.Println("No logs found in the transaction receipt")
 		}
@@ -200,7 +199,7 @@ func main() {
 			// TODO: use go fiber client to make invoice requests
 			// TODO: persist key pair - invoice_id, order_id
 			fmt.Printf("Consumed event from topic %s: key = %-10s value = %s\n",
-					*ev.TopicPartition.Topic, string(ev.Key), string(ev.Value))
+				*ev.TopicPartition.Topic, string(ev.Key), string(ev.Value))
 		case kafka.Error:
 			fmt.Fprintf(os.Stderr, "%% Error: %v\n", ev)
 			run = false

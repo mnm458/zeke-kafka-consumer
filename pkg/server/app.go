@@ -1,13 +1,15 @@
 package server
 
 import (
-	"fmt"
-	"log"
-	"time"
 	"context"
 	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -19,10 +21,10 @@ type WebhookRequest struct {
 	Summary      string    `json:"summary"`
 	Resource     struct {
 		Payments []struct {
-			Type            string    `json:"type"`
-			TransactionID   string    `json:"transaction_id"`
-			TransactionType string    `json:"transaction_type"`
-			Method          string    `json:"method"`
+			Type            string `json:"type"`
+			TransactionID   string `json:"transaction_id"`
+			TransactionType string `json:"transaction_type"`
+			Method          string `json:"method"`
 		} `json:"payments"`
 		TotalAmount struct {
 			Currency string `json:"currency"`
@@ -36,9 +38,9 @@ type WebhookRequest struct {
 		} `json:"paid_amount"`
 		ID    string `json:"id"`
 		Items []struct {
-			Name            string `json:"name"`
-			Quantity        int    `json:"quantity"`
-			UnitPrice       struct {
+			Name      string `json:"name"`
+			Quantity  int    `json:"quantity"`
+			UnitPrice struct {
 				Currency string `json:"currency"`
 				Value    string `json:"value"`
 			} `json:"unit_price"`
@@ -59,9 +61,9 @@ func Run() {
 
 	// Initialise client to connect to db instance 1 for message broking
 	client := redis.NewClient(&redis.Options{
-		Addr: redisBaseUrl+":"+redisPort,
+		Addr:     redisBaseUrl + ":" + redisPort,
 		Password: "",
-		DB: 1,
+		DB:       1,
 	})
 
 	defer client.Close()
@@ -84,22 +86,22 @@ func Run() {
 
 		invoice_id := request.Resource.ID
 
-		fmt.Printf("inv_id", invoice_id)
+		fmt.Printf(invoice_id)
 
 		persistErr := client.LPush(context.Background(), "queue", invoice_id).Err()
-    if persistErr != nil {
-        panic(persistErr)
-    }
+		if persistErr != nil {
+			panic(persistErr)
+		}
 
 		// TODO: use for completing order
 		// result, readErr := client.BLPop(context.Background(), 0, "queue").Result()
-    // if readErr != nil {
-    //     log.Fatal("Error reading from queue:", readErr)
-    // }		
+		// if readErr != nil {
+		//     log.Fatal("Error reading from queue:", readErr)
+		// }
 
-		return c.SendString("Invoice_id: "+invoice_id+" added to queue ready to be processed.")
+		return c.SendString("Invoice_id: " + invoice_id + " added to queue ready to be processed.")
 	})
 
-// Start the server on port 3000
-log.Fatal(app.Listen(":3000"))
+	// Start the server on port 3000
+	log.Fatal(app.Listen(":3000"))
 }

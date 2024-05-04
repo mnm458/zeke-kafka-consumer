@@ -46,7 +46,7 @@ func CreatePayPalInvoice(txAmount int) (string, error) {
 	accessToken, err := generateAccessToken(clientID, clientSecret)
 	if err != nil {
 		fmt.Println("Error generating access token:", err)
-		return err
+		return "", err
 	}
 
 	// Seed the random number generator
@@ -86,7 +86,7 @@ func CreatePayPalInvoice(txAmount int) (string, error) {
 	// Create HTTP request
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Set request headers
@@ -97,19 +97,19 @@ func CreatePayPalInvoice(txAmount int) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	// Read response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Check response status
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("error: %s", resp.Status)
+		return "", fmt.Errorf("error: %s", resp.Status)
 	}
 
 	fmt.Println("PayPal invoice created successfully!")
@@ -122,7 +122,7 @@ func CreatePayPalInvoice(txAmount int) (string, error) {
 	}
 	fmt.Println("body json", bodyJson)
 	invoice_id := bodyJson.Href[len(bodyJson.Href)-24:]
-	fmt.Println(href)
+	fmt.Println(invoice_id)
 
 	return invoice_id, nil
 }
